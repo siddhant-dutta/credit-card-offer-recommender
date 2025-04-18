@@ -31,3 +31,12 @@ build/
 
 ### VS Code ###
 .vscode/
+
+### Spring Boot Config (Sensitive Info) ###
+application.properties
+application.yaml
+.env
+
+# Log Files
+*.log
+logs/
