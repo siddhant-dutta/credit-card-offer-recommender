@@ -1,7 +1,9 @@
 package com.ccrecommender.service;
 
+import com.ccrecommender.dto.CardOfferDTO;
 import com.ccrecommender.dto.OfferWithSavings;
 import com.ccrecommender.entity.CardOfferEntity;
+import com.ccrecommender.mapper.CardOfferMapper;
 import com.ccrecommender.repository.CardOfferRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -29,8 +31,9 @@ public class CardOfferService {
         return cardOfferRepository.findByMerchantIgnoreCase(merchant);
     }
 
-    public CardOfferEntity createCardOffer(CardOfferEntity cardOfferEntity) {
-        return cardOfferRepository.save(cardOfferEntity);
+    public CardOfferEntity createCardOffer(CardOfferDTO cardOfferDTO) {
+
+        return cardOfferRepository.save(CardOfferMapper.toEntity(cardOfferDTO));
     }
 
     /**

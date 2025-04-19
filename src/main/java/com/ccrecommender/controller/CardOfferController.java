@@ -1,13 +1,16 @@
 package com.ccrecommender.controller;
 
+import com.ccrecommender.dto.CardOfferDTO;
 import com.ccrecommender.dto.OfferWithSavings;
 import com.ccrecommender.entity.CardOfferEntity;
+import com.ccrecommender.mapper.CardOfferMapper;
 import com.ccrecommender.service.CardOfferService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/offers")
@@ -22,17 +25,20 @@ public class CardOfferController {
         return ResponseEntity.ok(cardOfferService.getAllCardOffers());
     }
 
-    // 🔹 Create a new offer
+    // 🔹 Create a new offerDTO
     @PostMapping
-    public ResponseEntity<CardOfferEntity> createOffer(@RequestBody CardOfferEntity offer) {
-        CardOfferEntity created = cardOfferService.createCardOffer(offer);
-        return ResponseEntity.ok(created);
+    public ResponseEntity<CardOfferDTO> createOffer(@RequestBody CardOfferDTO offerDTO) {
+        CardOfferEntity created = cardOfferService.createCardOffer(offerDTO);
+        return ResponseEntity.ok(CardOfferMapper.toDTO(created));
     }
 
     // 🔹 Get offers by merchant
     @GetMapping("/merchant/{merchant}")
-    public ResponseEntity<List<CardOfferEntity>> getOffersByMerchant(@PathVariable String merchant) {
-        return ResponseEntity.ok(cardOfferService.getAllCardOffersByMerchant(merchant));
+    public ResponseEntity<List<CardOfferDTO>> getOffersByMerchant(@PathVariable String merchant) {
+        List<CardOfferDTO> offers = cardOfferService.getAllCardOffersByMerchant(merchant).stream()
+                .map(CardOfferMapper::toDTO)
+                .collect(Collectors.toList());
+        return ResponseEntity.ok(offers);
     }
 
     // 🔹 Get best offers for a user (based on input + optional user cards)
