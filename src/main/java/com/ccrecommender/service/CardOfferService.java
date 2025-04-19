@@ -1,5 +1,6 @@
 package com.ccrecommender.service;
 
+import com.ccrecommender.dto.BestOffersRequestDTO;
 import com.ccrecommender.dto.CardOfferDTO;
 import com.ccrecommender.dto.OfferWithSavings;
 import com.ccrecommender.entity.CardOfferEntity;
@@ -11,6 +12,7 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -23,8 +25,10 @@ public class CardOfferService {
     // 🔍 Public Methods - CRUD & Query Endpoints
     // ---------------------------------------------
 
-    public List<CardOfferEntity> getAllCardOffers() {
-        return cardOfferRepository.findAll();
+    public List<CardOfferDTO> getAllCardOffers() {
+        return cardOfferRepository.findAll().stream()
+                .map(CardOfferMapper::toDTO)
+                .collect(Collectors.toList());
     }
 
     public List<CardOfferEntity> getAllCardOffersByMerchant(String merchant) {
@@ -39,32 +43,26 @@ public class CardOfferService {
     /**
      * Suggests the best card offers based on user input filters.
      *
-     * @param merchant    e.g., "Amazon"
-     * @param category    e.g., "Shopping"
-     * @param paymentType e.g., "Online"
-     * @param txnAmount   e.g., 5000.0
-     * @param userId      e.g., 1234567890
+     * @param requestDTO contains filters like merchant, category, paymentType, txnAmount, userId
      * @return list of eligible offers with estimated savings, sorted by savings
      */
-    public List<OfferWithSavings> getBestCardOffers(
-            String merchant,
-            String category,
-            String paymentType,
-            double txnAmount,
-            Long userId // TODO: In future, fetch from userId
-    ) {
+    public List<OfferWithSavings> getBestCardOffers(BestOffersRequestDTO requestDTO) {
 
-        List<String> userCards = userCardService.getUserCardNames(userId);
+        // Fetch the user cards based on the userId in the request DTO
+        List<String> userCards = userCardService.getUserCardNames(requestDTO.getUserId());
+
+        // Fetch eligible offers with card filter logic
         List<CardOfferEntity> eligibleOffers = cardOfferRepository.findEligibleOffersWithCardFilter(
-                merchant,
-                category,
-                paymentType,
-                txnAmount,
+                requestDTO.getMerchant(),
+                requestDTO.getCategory(),
+                requestDTO.getPaymentType(),
+                requestDTO.getTxnAmount(),
                 isNullOrEmpty(userCards) ? null : userCards
         );
 
-        return calculateOfferSavings(eligibleOffers, txnAmount);
+        return calculateOfferSavings(eligibleOffers, requestDTO.getTxnAmount());
     }
+
 
     // ---------------------------------------------
     // 🔧 Private Helpers

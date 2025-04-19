@@ -1,5 +1,6 @@
 package com.ccrecommender.controller;
 
+import com.ccrecommender.dto.BestOffersRequestDTO;
 import com.ccrecommender.dto.CardOfferDTO;
 import com.ccrecommender.dto.OfferWithSavings;
 import com.ccrecommender.entity.CardOfferEntity;
@@ -21,7 +22,7 @@ public class CardOfferController {
 
     // 🔹 Get all offers
     @GetMapping
-    public ResponseEntity<List<CardOfferEntity>> getAllOffers() {
+    public ResponseEntity<List<CardOfferDTO>> getAllOffers() {
         return ResponseEntity.ok(cardOfferService.getAllCardOffers());
     }
 
@@ -42,17 +43,9 @@ public class CardOfferController {
     }
 
     // 🔹 Get best offers for a user (based on input + optional user cards)
-    @GetMapping("/{userId}/best-offers")
-    public ResponseEntity<List<OfferWithSavings>> getBestOffersForUser(
-            @PathVariable Long userId,
-            @RequestParam String merchant,
-            @RequestParam String category,
-            @RequestParam String paymentType,
-            @RequestParam double txnAmount
-    ) {
-        List<OfferWithSavings> offers = cardOfferService.getBestCardOffers(
-                merchant, category, paymentType, txnAmount, userId
-        );
+    @PostMapping("/best-offers")
+    public ResponseEntity<List<OfferWithSavings>> getBestOffersForUser(@RequestBody BestOffersRequestDTO requestDTO) {
+        List<OfferWithSavings> offers = cardOfferService.getBestCardOffers(requestDTO);
         return ResponseEntity.ok(offers);
     }
 }
