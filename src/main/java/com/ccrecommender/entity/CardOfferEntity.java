@@ -1,9 +1,11 @@
 package com.ccrecommender.entity;
 
 import jakarta.persistence.*;
+import lombok.Data;
 
 import java.time.LocalDate;
 
+@Data
 @Entity
 @Table(name = "card_offer")
 public class CardOfferEntity {
@@ -23,6 +25,7 @@ public class CardOfferEntity {
     private Double maxSavings;
 
     private String category;
+
     private String paymentType;
 
     private LocalDate validFrom;
@@ -30,6 +33,5 @@ public class CardOfferEntity {
 
     private String offerNote;
 
-    // Getters & Setters
-    // Constructors
+
 }
