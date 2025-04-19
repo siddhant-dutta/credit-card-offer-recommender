@@ -19,6 +19,7 @@ public class UserCardController {
     private final UserCardService userCardService;
 
     // 🔹 1. Add a card for a user
+    @PostMapping
     public ResponseEntity<?> addCard(@RequestBody UserCardDTO userCardDTO) {
         try {
             UserCardEntity saved = userCardService.addUserCard(userCardDTO);
